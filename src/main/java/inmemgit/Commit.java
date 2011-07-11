@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-final class Commit {
+final class Commit implements HasCommit {
   private final Map<String, Object> snapshot = new HashMap<String, Object>();
   private final String message;
   private final List<Commit> parents;
@@ -29,5 +29,25 @@ final class Commit {
 
   public Object show(String name) {
     return snapshot.get(name);
+  }
+
+  public Commit minus(int number) {
+    if (parents.size() > 1)
+        throw null;
+
+    if (number == 1)
+        return parents.get(0);
+
+    return parents.get(0).minus(number - 1);
+  }
+
+  @Override
+  public Commit getCommit() {
+    return this;
+  }
+
+  @Override
+  public <R> R accept(Visitor<R> visitor) {
+    return visitor.visitCommit(this);
   }
 }
