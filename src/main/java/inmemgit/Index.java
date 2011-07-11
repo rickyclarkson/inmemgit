@@ -17,4 +17,8 @@ final class Index {
   public Iterable<Entry<String, Object>> items() {
     return hash.entrySet();
   }
+
+  public boolean isEmpty() {
+    return hash.isEmpty();
+  }
 }

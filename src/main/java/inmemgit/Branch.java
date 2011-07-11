@@ -1,7 +1,7 @@
 package inmemgit;
 
 public class Branch implements HasCommit {
-  private final String name;
+  public final String name;
   public Commit head;
 
   public Branch(String name, Commit head) {

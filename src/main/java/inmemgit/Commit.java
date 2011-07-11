@@ -47,4 +47,11 @@ final class Commit implements HasCommit {
   public <R> R accept(Visitor<R> visitor) {
     return visitor.visitCommit(this);
   }
+
+  public boolean isDescendentOf(Commit commit) {
+    for (Commit parent: parents)
+      if (parent.equals(commit) || parent.isDescendentOf(commit))
+        return true;
+    return false;
+  }
 }

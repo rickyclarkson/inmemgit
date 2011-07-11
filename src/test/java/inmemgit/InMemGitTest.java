@@ -97,4 +97,17 @@ public class InMemGitTest {
     git.commit("Second commit");
     assertEquals("baz", git.show("foo"));
   }
+
+  @Test
+  public void canClone() {
+    InMemGit remote = InMemGit.init();
+    remote.add("foo", "bar");
+    remote.commit("Initial commit");
+
+    InMemGit local = remote.cloneRepository();
+    local.add("foo", "baz");
+    local.commit("Second commit");
+    local.push(remote, local.getCurrentBranch().some(), remote.getCurrentBranch().some());
+    assertEquals("baz", remote.show("foo"));
+  }
 }
