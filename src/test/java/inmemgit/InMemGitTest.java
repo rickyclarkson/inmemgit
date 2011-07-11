@@ -54,4 +54,47 @@ public class InMemGitTest {
     assertEquals("bar", git.show("foo"));
     assertNotSame("eggs", git.show("spam"));
   }
+
+  @Test
+  public void canMerge() {
+    InMemGit git = InMemGit.init();
+    git.add("foo", "bar");
+    git.commit("Initial commit");
+    Branch master = git.getCurrentBranch().some();
+    Branch one = git.checkoutNewBranch("one");
+    git.add("spam", "eggs");
+    git.commit("One");
+    git.checkout(master);
+    git.add("spam", "fries");
+    git.commit("Master");
+    assertEquals("fries", git.show("spam"));
+    git.merge(one, Merge.ours, "Merge");
+    assertEquals("fries", git.show("spam"));
+  }
+
+  @Test
+  public void canMergeWithDifferentStrategy() {
+    InMemGit git = InMemGit.init();
+    git.add("foo", "bar");
+    git.commit("Initial commit");
+    Branch master = git.getCurrentBranch().some();
+    Branch one = git.checkoutNewBranch("one");
+    git.add("spam", "eggs");
+    git.commit("One");
+    git.checkout(master);
+    git.add("spam", "fries");
+    git.commit("Master");
+    git.merge(one, Merge.theirs, "Merge");
+    assertEquals("eggs", git.show("spam"));
+  }
+
+  @Test
+  public void canOverwrite() {
+    InMemGit git = InMemGit.init();
+    git.add("foo", "bar");
+    git.commit("Initial commit");
+    git.add("foo", "baz");
+    git.commit("Second commit");
+    assertEquals("baz", git.show("foo"));
+  }
 }

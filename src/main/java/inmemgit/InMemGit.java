@@ -1,19 +1,13 @@
 package inmemgit;
 
 import fj.data.Option;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 public final class InMemGit {
   private Index index = new Index();
-  public Commit head = new Commit("First commit", new Index(), Collections.<Commit>emptyList());
-  private List<Branch> branches = new ArrayList<Branch>();
+  public Commit head = new Commit("First commit", new Index(), Collections.<Commit>emptyList(), Merge.error);
   private Option<Branch> currentBranch = Option.some(new Branch("master", head));
-
-  private InMemGit() {
-    branches.add(currentBranch.some());
-  }
 
   public static InMemGit init() {
     return new InMemGit();
@@ -24,7 +18,11 @@ public final class InMemGit {
   }
 
   public void commit(String message) {
-    head = new Commit(message, index, Collections.singletonList(head));
+    commit(new Commit(message, index, Collections.singletonList(head), Merge.error));
+  }
+
+  private void commit(Commit commit) {
+    head = commit;
     index = new Index();
     for (Branch b: currentBranch)
       b.head = head;
@@ -36,7 +34,6 @@ public final class InMemGit {
 
   public Branch checkoutNewBranch(String name) {
     Branch branch = new Branch(name, head);
-    branches.add(branch);
     currentBranch = Option.some(branch);
     return branch;
   }
@@ -58,5 +55,9 @@ public final class InMemGit {
 
   public Option<Branch> getCurrentBranch() {
     return currentBranch;
+  }
+
+  public void merge(Branch branch, Merge merge, String message) {
+    commit(new Commit(message, new Index(), Arrays.asList(head, branch.getCommit()), merge));
   }
 }
